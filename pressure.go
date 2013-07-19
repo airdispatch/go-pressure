@@ -94,6 +94,15 @@ func OpenDatabaseFromURL(url string) (*sql.DB, error) {
 type TemplateView func(ctx *web.Context)
 type WildcardTemplateView func(ctx *web.Context, val string)
 
+func (s *Server) GetTemplateNamed(templateName string) (*template.Template, error) {
+	t, ok := s.parsedTemplates[templateName]
+	if !ok {
+		return nil, errors.New("Couldn't find template.")
+	}
+
+	return &t, nil
+}
+
 func (s *Server) DisplayTemplate(templateName string) TemplateView {
 	return func(ctx *web.Context) {
 		s.WriteTemplateToContext(templateName, ctx, nil)
