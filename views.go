@@ -1,9 +1,11 @@
 package pressure
 
+import "io"
+
 type ViewHeaders map[string]string
 
 type View interface {
-	Body() []byte
+	WriteBody(io.Writer)
 	StatusCode() int
 	ContentType() string
 	ContentLength() int
@@ -17,11 +19,12 @@ type BasicView struct {
 }
 
 func (b BasicView) StatusCode() int {
-	return b.StatusCode()
+	return b.Status
 }
 
-func (b BasicView) Body() []byte {
-	return []byte(b.Text)
+func (b BasicView) WriteBody(w io.Writer) {
+	w.Write([]byte(b.Text))
+	return
 }
 
 func (b BasicView) ContentLength() int {

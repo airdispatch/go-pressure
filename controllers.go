@@ -60,7 +60,7 @@ func NewHandlerFuncFromController(c Controller, capture URLCapture, l *Logger) h
 		}
 
 		// Write Body
-		res.Write(pressureResponse.Body())
+		pressureResponse.WriteBody(res)
 	}
 }
 
