@@ -1,7 +1,6 @@
 package pressure
 
 import (
-	"fmt"
 	"io"
 	"mime"
 	"os"
@@ -27,10 +26,13 @@ func (s StaticFileRoute) GetMatch(path string) (*RouteMatch, bool) {
 	}
 
 	// We have a match... Check for File
-	fmt.Println("Matched URL Handler for Static Files")
-	file_location := filepath.Join(s.directory, strings.TrimPrefix(path, s.removePattern))
-	fmt.Println("Remove Pattern", s.removePattern)
-	fmt.Println("File Path", file_location)
+	relative_location := s.URLRoute.compiledRegex.ReplaceAllString(path, "")
+	file_location := filepath.Join(s.directory, relative_location)
+
+	// Make sure that we aren't just getting the same directory
+	if filepath.Clean(file_location) == filepath.Clean(s.directory) {
+		return nil, false
+	}
 
 	fi, err := os.Open(file_location)
 	if err != nil {
