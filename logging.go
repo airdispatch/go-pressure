@@ -63,7 +63,7 @@ func (l *Logger) LogDebug(objects ...interface{}) {
 func (l *Logger) logMessageAtLevel(level int, objects ...interface{}) {
 	if l.LogLevel <= level {
 		// Mon Jan 2 15:04:05 -0700 MST 2006
-		fmt.Print("[", time.Now().Format("02/01/2006 - 3:04:05.00 PM (MST)"), "]: ")
+		fmt.Print("[", time.Now().Format("02/01/2006 - 3:04:05.99 PM (MST)"), "]: ")
 		fmt.Println(objects...)
 		fmt.Print(reset)
 	}
