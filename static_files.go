@@ -5,7 +5,6 @@ import (
 	"mime"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 type StaticFileRoute struct {
@@ -71,7 +70,7 @@ func (b StaticFileViewController) ContentLength() int {
 }
 
 func (b StaticFileViewController) ContentType() string {
-	return mime.TypeByExtension("." + strings.Split(b.Name, ".")[1])
+	return mime.TypeByExtension(filepath.Ext(b.Name))
 }
 
 func (b StaticFileViewController) Headers() ViewHeaders {
