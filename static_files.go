@@ -71,7 +71,7 @@ func (b StaticFileViewController) ContentLength() int {
 }
 
 func (b StaticFileViewController) ContentType() string {
-	return mime.TypeByExtension(strings.Split(b.Name, ".")[0])
+	return mime.TypeByExtension("." + strings.Split(b.Name, ".")[1])
 }
 
 func (b StaticFileViewController) Headers() ViewHeaders {
