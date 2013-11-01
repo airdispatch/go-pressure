@@ -69,41 +69,39 @@ func (s *TemplateEngine) GetTemplateNamed(templateName string) (*template.Templa
 }
 
 func (s *TemplateEngine) CompileTemplates() {
-	s.loadTemplatesFromFolder(s.Directory, "", true)
+	s.loadTemplatesFromFolder(s.Directory, true)
 }
 
-func (s *TemplateEngine) loadTemplatesFromFolder(folder string, append_name string, linkWithBase bool) {
+func (s *TemplateEngine) loadTemplatesFromFolder(folder string, linkWithBase bool) {
 	// Walk through original Directory
 	filepath.Walk(folder, func(path string, info os.FileInfo, err error) error {
 		if folder == path {
 			return nil
 		}
 
-		if info.IsDir() {
-			// Call yourself if you find more templates
-			s.loadTemplatesFromFolder(path, filepath.Join(append_name, info.Name()), linkWithBase)
-		} else {
+		if !info.IsDir() {
 			// Parse templates here
 			if info.Name() == s.BaseTemplateName {
 				return nil
 			}
 
 			linkingOption := linkWithBase
-			effectiveName := info.Name()
+			effectivePath := path
 
 			if strings.HasPrefix(info.Name(), "__nolink ") {
 				linkingOption = false
-				effectiveName = strings.TrimPrefix(info.Name(), "__nolink ")
+				effectivePath = strings.Replace(path, "__nolink ", "", 1)
 			}
 
-			templateName := append_name + effectiveName
-			s.parseTemplate(templateName, filepath.Join(s.Directory, append_name, info.Name()), linkingOption)
+			templateName, _ := filepath.Rel(folder, effectivePath)
+			s.parseTemplate(templateName, path, linkingOption)
 		}
 		return nil
 	})
 }
 
 func (s *TemplateEngine) parseTemplate(templateName string, filename string, linkWithBase bool) {
+	s.LogDebug("Parsing", filename, "as", templateName)
 	var tmp *template.Template
 	var err error
 
@@ -115,6 +113,8 @@ func (s *TemplateEngine) parseTemplate(templateName string, filename string, lin
 
 	if err != nil {
 		s.LogError("Unable to parse template", filename)
+		s.LogError(err)
+		return
 	}
 
 	s.CachedTemplates[templateName] = *tmp
