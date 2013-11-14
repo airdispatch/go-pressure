@@ -5,10 +5,13 @@ import (
 )
 
 type Server struct {
-	backend *http.Server
-	router  *Router
-	Debug   bool
-	Port    string
+	backend            *http.Server
+	router             *Router
+	Debug              bool
+	Port               string
+	SSLCertificateFile string
+	SSLKeyFile         string
+	config             map[string]string
 	*Logger
 }
 
@@ -37,7 +40,16 @@ func (s *Server) RunServer() {
 	s.router.Logger = s.Logger
 
 	s.Logger.LogDebug("Server is now running at", s.Port)
-	err := s.backend.ListenAndServe()
+
+	var err error
+	if s.SSLCertificateFile != "" && s.SSLKeyFile != "" {
+		s.Logger.LogWarning("Server is running in secure mode.")
+		err = s.backend.ListenAndServeTLS(s.SSLCertificateFile, s.SSLKeyFile)
+	} else {
+		s.Logger.LogWarning("Server is running in insecure mode.")
+		err = s.backend.ListenAndServe()
+	}
+
 	if err != nil {
 		s.Logger.LogError("Error Occured to Run Server:", err)
 		return
@@ -50,4 +62,13 @@ func (s *Server) RegisterURL(url_tuple ...Route) {
 	for _, u := range url_tuple {
 		s.router.AddRoute(u)
 	}
+}
+
+func (s *Server) SetConfig(name string, value string) {
+	s.config[name] = value
+}
+
+func (s *Server) GetConfig(name string) (value string, ok bool) {
+	value, ok = s.config[name]
+	return
 }
