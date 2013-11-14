@@ -26,8 +26,7 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	// 404 if cannot find route
 	if !follow || match == nil {
 		r.Logger.LogWarning(req.Method, req.URL.Path, "Unable to Resolve Route")
-		h := HTTPError{404, "404: Unable to resolve route."}
-		h.Write(res)
+		HTTPErrorNotFound.Write(res)
 		return
 	}
 
