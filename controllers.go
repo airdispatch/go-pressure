@@ -6,6 +6,7 @@ import (
 )
 
 type Request struct {
+	*http.Request
 	Form   map[string][]string
 	URL    URLCapture
 	Method string
@@ -54,9 +55,10 @@ func NewHandlerFuncFromController(c Controller, capture URLCapture, l *Logger) h
 func NewRequestFromHTTPRequest(req *http.Request) *Request {
 	req.ParseForm()
 	return &Request{
-		Form:   req.Form,
-		Method: req.Method,
-		Path:   req.URL.Path,
-		r:      req,
+		Request: req,
+		Form:    req.Form,
+		Method:  req.Method,
+		Path:    req.URL.Path,
+		r:       req,
 	}
 }
