@@ -1,15 +1,19 @@
 package pressure
 
-import "io"
+import "net/http"
 
 type ViewHeaders map[string]string
 
 type View interface {
-	WriteBody(io.Writer)
+	WriteBody(http.ResponseWriter)
 	StatusCode() int
 	ContentType() string
 	ContentLength() int
 	Headers() ViewHeaders
+}
+
+type CookieView interface {
+	AddCookies(http.ResponseWriter)
 }
 
 type BasicView struct {
@@ -22,7 +26,7 @@ func (b BasicView) StatusCode() int {
 	return b.Status
 }
 
-func (b BasicView) WriteBody(w io.Writer) {
+func (b BasicView) WriteBody(w http.ResponseWriter) {
 	w.Write([]byte(b.Text))
 	return
 }

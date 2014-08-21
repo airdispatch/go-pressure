@@ -47,6 +47,12 @@ func NewHandlerFuncFromController(c Controller, capture URLCapture, l *Logger) h
 			res.Header().Add(i, v)
 		}
 
+		if c, ok := pressureResponse.(CookieView); ok {
+			c.AddCookies(res)
+		}
+
+		res.WriteHeader(pressureResponse.StatusCode())
+
 		// Write Body
 		pressureResponse.WriteBody(res)
 	}

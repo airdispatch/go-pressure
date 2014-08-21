@@ -3,6 +3,7 @@ package pressure
 import (
 	"io"
 	"mime"
+	"net/http"
 	"os"
 	"path/filepath"
 )
@@ -59,7 +60,7 @@ func (b StaticFileViewController) StatusCode() int {
 	return 200
 }
 
-func (b StaticFileViewController) WriteBody(w io.Writer) {
+func (b StaticFileViewController) WriteBody(w http.ResponseWriter) {
 	io.Copy(w, b.File)
 	b.File.Close()
 }
